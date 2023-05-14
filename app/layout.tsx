@@ -1,3 +1,5 @@
+import BookModal from './components/modals/BookModal'
+import Modal from './components/modals/Modal'
 import Navbar from './components/navbar/Navbar'
 import './globals.css'
 import { Inter } from 'next/font/google'
@@ -16,7 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className}
+      suppressHydrationWarning={true}>
+        <BookModal />
         <Navbar />
         {children}
       </body>
