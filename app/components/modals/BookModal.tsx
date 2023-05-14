@@ -27,16 +27,18 @@ const BookModal = () => {
     })
     const onSubmit:SubmitHandler<FieldValues> = async (data) => {
         setIsLoading(true)
-        if(!book || book.volumeInfo.industryIdentifiers[0].identifier !== data.isbn){
+        if(!book || !(book.volumeInfo.industryIdentifiers[0].identifier === data.isbn || book.volumeInfo.industryIdentifiers[1].identifier === data.isbn )){
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${data.isbn}`)
             const json = await response.json()
-            if(json.items.length > 0){
+            console.log(json)
+            if(json?.items?.length > 0){
                 setBook(json.items[0])
             }else{
                 setBook(null)
+                reset()
+                toast.error('Invalid ISBN')
             }
-            setIsLoading(false)
-            return;
+            return setIsLoading(false)
         }
         axios.post('/api/books',{
             isbn: book.volumeInfo.industryIdentifiers[0].identifier,
