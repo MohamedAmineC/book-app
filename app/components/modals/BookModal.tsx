@@ -7,6 +7,8 @@ import Heading from '../Heading'
 import Input from '../inputs/Input'
 import {useForm,FieldValues,SubmitHandler} from "react-hook-form"
 import Image from 'next/image'
+import axios from 'axios'
+import { toast } from 'react-hot-toast'
 
 const BookModal = () => {
     const {isOpen,onClose,onOpen} = useBookModal()
@@ -28,7 +30,6 @@ const BookModal = () => {
         if(!book || book.volumeInfo.industryIdentifiers[0].identifier !== data.isbn){
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${data.isbn}`)
             const json = await response.json()
-            console.log(json)
             if(json.items.length > 0){
                 setBook(json.items[0])
             }else{
@@ -37,7 +38,27 @@ const BookModal = () => {
             setIsLoading(false)
             return;
         }
-
+        axios.post('/api/books',{
+            isbn: book.volumeInfo.industryIdentifiers[0].identifier,
+            title: book.volumeInfo.title,
+            subTitle: book.volumeInfo.subtitle,
+            authors: book.volumeInfo.authors,
+            description: book.volumeInfo.description,
+            image: book.volumeInfo.imageLinks.thumbnail,
+            language: book.volumeInfo.language,
+            categories: book.volumeInfo.categories,
+            publishedDate: book.volumeInfo.publishedDate,
+            rating: book.volumeInfo.averageRating
+        }).then(() => {
+            toast.success('Book added to your library')
+            setBook(null)
+        }).catch((error) => {
+            console.log(error)
+            toast.error(error?.response?.data)
+        }).finally(() => {
+            setIsLoading(false)
+            onClose()
+        })
         console.log(book)
     }
     const onSecondAction = () => {
