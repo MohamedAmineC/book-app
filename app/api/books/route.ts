@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb"
 import getBookByIsbn from "@/app/actions/getBookByIsbn";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
 interface bodyParams {
     isbn:string,
@@ -18,6 +19,7 @@ interface bodyParams {
 export async function POST(req:Request) {
     try{
     const body:bodyParams = await req.json();
+    const currentUser = await getCurrentUser();
     const {
         isbn,
         title,
@@ -31,9 +33,25 @@ export async function POST(req:Request) {
         rating
     } = body
 
+    if(!currentUser){
+        return new NextResponse('Please login to continue this action',{status:403})
+    }
     const book = await getBookByIsbn(isbn);
     if(book){
-        return new NextResponse('Book already exists',{status:401})
+        const updatedUser = await prisma.user.update({
+            where:{
+                id:currentUser.id
+            },
+            data:{
+                books:{
+                    connect:{
+                        id:book.id
+                    }
+                }
+            }
+        })
+
+        return new NextResponse('Book added to your library')
     }
     const newBook = await prisma.book.create({
         data:{
@@ -46,7 +64,12 @@ export async function POST(req:Request) {
             categories,
             image,
             publishedDate: new Date(publishedDate),
-            rating
+            rating,
+            user:{
+                connect:{
+                    id: currentUser?.id
+                }
+            }
         }
     })
     return NextResponse.json(newBook);

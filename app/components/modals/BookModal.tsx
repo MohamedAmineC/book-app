@@ -9,6 +9,7 @@ import {useForm,FieldValues,SubmitHandler} from "react-hook-form"
 import Image from 'next/image'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
+import { BeatLoader } from 'react-spinners'
 
 const BookModal = () => {
     const {isOpen,onClose,onOpen} = useBookModal()
@@ -106,7 +107,7 @@ const BookModal = () => {
                             {book.volumeInfo.authors.join(', ')}
                         </div>
                         <div className='text-sm text-neutral-500 font-light'>
-                            {book.volumeInfo.categories.join(', ')}
+                            {book.volumeInfo.categories?.join(', ')}
                         </div>
                     </div>
                 </div>
@@ -117,7 +118,7 @@ const BookModal = () => {
     <Modal 
     isOpen={isOpen}
     onClose={onClose}
-    actionLabel={book ? 'Confirm' : 'Search'}
+    actionLabel={isLoading ? <BeatLoader size={18} color='white'/> : (book ? 'Confirm' : 'Search')}
     onSubmit={handleSubmit(onSubmit)}
     title='Add a book to your library'
     disabled={isLoading}

@@ -5,7 +5,7 @@ import { IconType } from "react-icons/lib"
 interface ButtonProps {
     disabled?: boolean
     outline?: boolean
-    label: string
+    label: string | React.JSX.Element
     onClick: () => void
     small?: boolean,
     icon?: IconType

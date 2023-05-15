@@ -11,7 +11,7 @@ interface ModalProps {
     title?: string,
     body?: React.ReactElement
     footer?: React.ReactElement
-    actionLabel: string,
+    actionLabel: string | React.JSX.Element,
     disabled?: boolean,
     secondaryAction?: () => void
     secondaryActionLabel?: string,
@@ -87,6 +87,9 @@ const Modal:React.FC<ModalProps> = ({
                             onClick={handleSubmit}
                             />
                         </div>
+                    </div>
+                    <div className="p-6 flex-auto">
+                        {footer}
                     </div>
                 </div>
             </div>
